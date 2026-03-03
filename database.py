@@ -85,5 +85,19 @@ def init_db():
     except:
         pass
 
-    conn.commit()
-    conn.close()
+    # ===== Ensure new columns exist =====
+conn = sqlite3.connect(DB_NAME)
+c = conn.cursor()
+
+def add_column_if_not_exists(table, column_def):
+    try:
+        c.execute(f"ALTER TABLE {table} ADD COLUMN {column_def}")
+    except:
+        pass
+
+add_column_if_not_exists("service_history", "next_service_km INTEGER")
+add_column_if_not_exists("service_history", "next_service_hours INTEGER")
+
+conn.commit()
+conn.close()
+
