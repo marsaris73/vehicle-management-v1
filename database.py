@@ -98,6 +98,20 @@ def add_column_if_not_exists(table, column_def):
 add_column_if_not_exists("service_history", "next_service_km INTEGER")
 add_column_if_not_exists("service_history", "next_service_hours INTEGER")
 
+# Create default admin if none exists
+conn = sqlite3.connect(DB_NAME)
+conn.row_factory = sqlite3.Row
+c = conn.cursor()
+
+user = c.execute("SELECT * FROM users WHERE role='admin'").fetchone()
+
+if not user:
+    c.execute("""
+        INSERT INTO users (username, password, role)
+        VALUES (?, ?, ?)
+    """, ("admin", "1234", "admin"))
+
 conn.commit()
 conn.close()
+
 
